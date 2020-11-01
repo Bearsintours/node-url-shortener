@@ -24,6 +24,7 @@ app.use(bodyParser.json());
 // todo: use process.env.DB_URI;
 mongoose.connect(process.env.DB_URL, {
   useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
 const db = mongoose.connection;
