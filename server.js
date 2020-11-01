@@ -41,28 +41,22 @@ app.get("/", function (req, res) {
 
 // url shortener endpoint
 app.post("/api/shorturl/new", async (req, res) => {
-  const domain = req.body.url.split("://")[1];
+  const full_url = req.body.url;
+  const url_regex = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
   // invalid url format
-  if (domain === undefined) {
+  if (!full_url.match(url_regex)) {
     res.json({ error: "invalid URL" });
   } else {
-    await dns.lookup(domain, (err) => {
-      // domain not found
-      if (err) {
-        res.json({ error: "invalid URL" });
-      } else {
-        const url = new urlModel(req.body);
-        try {
-          url.save();
-          res.json({
-            original_url: url.url,
-            short_url: url.id,
-          });
-        } catch (err) {
-          res.status(500).send(err);
-        }
-      }
-    });
+    const url = new urlModel(req.body);
+    try {
+      await url.save();
+      res.json({
+        original_url: url.url,
+        short_url: url.id,
+      });
+    } catch (err) {
+      res.status(500).send(err);
+    }
   }
 });
 
