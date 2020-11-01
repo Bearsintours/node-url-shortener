@@ -1,5 +1,7 @@
 "use strict";
 
+require("dotenv").config();
+
 const express = require("express");
 const mongo = require("mongodb");
 const mongoose = require("mongoose");
@@ -20,7 +22,7 @@ app.use(bodyParser.json());
 
 // mongoose
 // todo: use process.env.DB_URI;
-mongoose.connect("mongodb+srv://root_user:root_pwd@cluster0.fduiv.mongodb.net/db?retryWrites=true&w=majority", {
+mongoose.connect(process.env.DB_URL, {
   useNewUrlParser: true,
 });
 
@@ -34,11 +36,6 @@ app.use("/public", express.static(process.cwd() + "/public"));
 
 app.get("/", function (req, res) {
   res.sendFile(process.cwd() + "/views/index.html");
-});
-
-// your first API endpoint...
-app.get("/api/hello", function (req, res) {
-  res.json({ greeting: "hello API" });
 });
 
 // url shortener endpoint
@@ -68,6 +65,7 @@ app.post("/api/shorturl/new", async (req, res) => {
   }
 });
 
+// Find url by id
 app.get("/api/shorturl/:id", (req, res) => {
   urlModel.findById(req.params.id, (err, result) => {
     if (err) {
